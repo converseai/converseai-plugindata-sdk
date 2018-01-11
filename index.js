@@ -11,11 +11,23 @@ module.exports = (function(){
 
   var promiseOrCallback = function(call, data, callback) {
     if (callback !== undefined) {
-      client[call](data, callback);
+      client[call](data, (err, response) => {
+        if (response !== undefined && response.error !== undefined && response.error !== null) {
+          err = response.error;
+        }
+        callback(err, response);
+      });
     } else {
       return new Promise(function(resolve, reject){
        client[call](data, function(err, response){
-         if(err !== null) return reject(err);
+         if (response !== undefined && response.error !== undefined && response.error !== null) {
+           err = response.error;
+         }
+
+         if (err !== undefined && err !== null) {
+           return reject(err);
+         }
+
          resolve(response);
        });
      });
@@ -27,14 +39,14 @@ module.exports = (function(){
       this.caller = caller;
     }
 
-    get(type) {
+    get(type, callback) {
       return promiseOrCallback('getPluginOAuth2Info', {
         caller: this.caller,
         oAuthType: type
       }, callback);
     }
 
-    update(type, data) {
+    update(type, data, callback) {
       return promiseOrCallback('updatePluginOAuth2Info', {
         caller: this.caller,
         oAuthType: type,
@@ -42,7 +54,7 @@ module.exports = (function(){
       }, callback);
     }
 
-    delete(type) {
+    delete(type, callback) {
       return promiseOrCallback('deletePluginOAuth2Info', {
         caller: this.caller,
         oAuthType: type
@@ -54,7 +66,7 @@ module.exports = (function(){
     }
 
     static get OAUTH_PROVIDER() {
-      return 0;
+      return 1;
     }
   }
 
@@ -97,13 +109,14 @@ module.exports = (function(){
       return 1;
     }
 
-    static get SCOPE_REQUEST() {
-      return 2;
-    }
-
-    static get SCOPE_CONVERSATION() {
-      return 3;
-    }
+    // TODO: THESE VARIABLES WILL DO NOTHING ON THE CONVERSE.AI PLATFORM.
+    // static get SCOPE_REQUEST() {
+    //   return 2;
+    // }
+    //
+    // static get SCOPE_CONVERSATION() {
+    //   return 3;
+    // }
   }
 
 
