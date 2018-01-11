@@ -39,8 +39,13 @@ module.exports = (function(){
   }
 
   var jsonConvertResponse = function(response) {
-    if (response !== undefined && response.data !== undefined && response.data !== null && response.data !== '') {
-      response.data = JSON.parse(response.data);
+    if (response !== undefined && response.data !== undefined && response.data !== null) {
+      // response.data is stored a Node.js Buffer and therefore must be
+      // converted to a utf8 string before parsed as JSON. 
+      var data = response.data.toString('utf8');
+      if (data !== undefined && data !== null && data !== '') {
+        response.data = JSON.parse(data);
+      }
     }
     return response;
   }
