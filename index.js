@@ -41,7 +41,7 @@ module.exports = (function(){
   var jsonConvertResponse = function(response) {
     if (response !== undefined && response.data !== undefined && response.data !== null) {
       // response.data is stored a Node.js Buffer and therefore must be
-      // converted to a utf8 string before parsed as JSON. 
+      // converted to a utf8 string before parsed as JSON.
       var data = response.data.toString('utf8');
       if (data !== undefined && data !== null && data !== '') {
         response.data = JSON.parse(data);
@@ -150,7 +150,7 @@ module.exports = (function(){
         caller: this.caller,
         scope: scope,
         key: key,
-        data: JSON.stringify(value)
+        data: Buffer.from(JSON.stringify(value))
       }, callback, jsonConvertResponse);
     }
 
@@ -167,7 +167,7 @@ module.exports = (function(){
         caller: this.caller,
         scope: scope,
         key: key,
-        data: null
+        data: Buffer.from(JSON.stringify({}))
       }, callback, jsonConvertResponse);
     }
 
