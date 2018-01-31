@@ -1,6 +1,6 @@
 {
   "name": "@converseai/plugindata-sdk",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "A nodejs library to store and fetch local data from the Converse.AI platform.",
   "main": "index.js",
   "scripts": {
