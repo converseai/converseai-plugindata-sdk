@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/converseai/converseai-plugindata-sdk#readme",
   "dependencies": {
-    "@converseai/plugindata": "^1.0.2"
+    "@converseai/plugindata": "github:converseai/converseai-plugindata#scope"
   }
 }

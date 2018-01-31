@@ -115,6 +115,13 @@ module.exports = (function(){
     }
   }
 
+  var flattenScope = function(scope) {
+    if (scope !== null && typeof scope === 'object') {
+      return scope;
+    }
+    return { scope: scope };
+  }
+
   class PluginLocalData {
     constructor(caller) {
       this.caller = caller;
@@ -123,15 +130,17 @@ module.exports = (function(){
     /**
     * Fetch Local Storage information on Converse.AI.
     * @param {String} key the key of the key-value pair.
-    * @param {Number} scope use PluginLocalData.SCOPE_USER or PluginLocalData.SCOPE_PROVIDER
+    * @param {Number|Object} scope use PluginLocalData.SCOPE_USER or PluginLocalData.SCOPE_PROVIDER or an object with properties `scope` and `uuid`.
     * @param {Function} [callback]
     *
     * @returns {Promise} If no callback argument was given then a promise is returned.
     */
     fetch(key, scope = PluginLocalData.SCOPE_USER, callback) {
+      var scopeObj = flattenScope(scope);
       return promiseOrCallback('getPluginLocalData', {
         caller: this.caller,
-        scope: scope,
+        scope: scopeObj.scope,
+        scopeUUID: scopeObj.uuid,
         key: key
       }, callback, jsonConvertResponse);
     }
@@ -140,15 +149,17 @@ module.exports = (function(){
     * Store Local Storage information on Converse.AI.
     * @param {String} key the key of the key-value pair.
     * @param {Object} value the value of the key-value pair.
-    * @param {Number} scope use PluginLocalData.SCOPE_USER or PluginLocalData.SCOPE_PROVIDER
+    * @param {Number|Object} scope use PluginLocalData.SCOPE_USER or PluginLocalData.SCOPE_PROVIDER or an object with properties `scope` and `uuid`.
     * @param {Function} [callback]
     *
     * @returns {Promise} If no callback argument was given then a promise is returned.
     */
     store(key, value, scope = PluginLocalData.SCOPE_USER, callback) {
+      var scopeObj = flattenScope(scope);
       return promiseOrCallback('storePluginLocalData', {
         caller: this.caller,
-        scope: scope,
+        scope: scopeObj.scope,
+        scopeUUID: scopeObj.uuid,
         key: key,
         data: Buffer.from(JSON.stringify(value))
       }, callback, jsonConvertResponse);
@@ -157,15 +168,17 @@ module.exports = (function(){
     /**
     * Delete Local Storage information on Converse.AI.
     * @param {String} key the key of the key-value pair.
-    * @param {Number} scope use PluginLocalData.SCOPE_USER or PluginLocalData.SCOPE_PROVIDER
+    * @param {Number|Object} scope use PluginLocalData.SCOPE_USER or PluginLocalData.SCOPE_PROVIDER or an object with properties `scope` and `uuid`.
     * @param {Function} [callback]
     *
     * @returns {Promise} If no callback argument was given then a promise is returned.
     */
     delete(key, scope = PluginLocalData.SCOPE_USER, callback) {
+      var scopeObj = flattenScope(scope);
       return promiseOrCallback('storePluginLocalData', {
         caller: this.caller,
-        scope: scope,
+        scope: scopeObj.scope,
+        scopeUUID: scopeObj.uuid,
         key: key,
         data: Buffer.from(JSON.stringify({}))
       }, callback, jsonConvertResponse);
