@@ -1,5 +1,4 @@
-
-module.exports = (function(){
+module.exports = (function () {
 
   const CONVERSEAI_PLUGINDATA_HOST = 'CONVERSEAI_PLUGINDATA_HOST';
 
@@ -9,7 +8,7 @@ module.exports = (function(){
 
   const client = require('@converseai/plugindata')(process.env[CONVERSEAI_PLUGINDATA_HOST]);
 
-  var promiseOrCallback = function(call, data, callback, convert = noConvertResponse) {
+  var promiseOrCallback = function (call, data, callback, convert = noConvertResponse) {
     if (callback !== undefined) {
       client[call](data, (err, response) => {
         if (response !== undefined && response.error !== undefined && response.error !== null) {
@@ -18,19 +17,19 @@ module.exports = (function(){
         callback(err, convert(response));
       });
     } else {
-      return new Promise(function(resolve, reject){
-       client[call](data, function(err, response){
-         if (response !== undefined && response.error !== undefined && response.error !== null) {
-           err = response.error;
-         }
+      return new Promise(function (resolve, reject) {
+        client[call](data, function (err, response) {
+          if (response !== undefined && response.error !== undefined && response.error !== null) {
+            err = response.error;
+          }
 
-         if (err !== undefined && err !== null) {
-           return reject(err);
-         }
+          if (err !== undefined && err !== null) {
+            return reject(err);
+          }
 
-         resolve(convert(response));
-       });
-     });
+          resolve(convert(response));
+        });
+      });
     }
   }
 
@@ -38,7 +37,7 @@ module.exports = (function(){
     return response;
   }
 
-  var jsonConvertResponse = function(response) {
+  var jsonConvertResponse = function (response) {
     if (response !== undefined) {
       if (response.data !== undefined && response.data !== null && response.data.length > 0) {
         // response.data is stored a Node.js Buffer and therefore must be
@@ -60,12 +59,12 @@ module.exports = (function(){
     }
 
     /**
-    * Gets the OAuth2 information.
-    * @param {Number} type use PluginOAuth2Info.OAUTH_USER or PluginOAuth2Info.OAUTH_PROVIDER
-    * @param {Function} [callback]
-    *
-    * @returns {Promise} If no callback argument was given then a promise is returned.
-    */
+     * Gets the OAuth2 information.
+     * @param {Number} type use PluginOAuth2Info.OAUTH_USER or PluginOAuth2Info.OAUTH_PROVIDER
+     * @param {Function} [callback]
+     *
+     * @returns {Promise} If no callback argument was given then a promise is returned.
+     */
     get(type, callback) {
       return promiseOrCallback('getPluginOAuth2Info', {
         caller: this.caller,
@@ -75,19 +74,41 @@ module.exports = (function(){
 
 
     /**
-    * Update the OAuth2 information.
-    *
-    * @param {Number} type use PluginOAuth2Info.OAUTH_USER or PluginOAuth2Info.OAUTH_PROVIDER
-    * @param {String} data.access_token
-    * @param {String} data.token_type
-    * @param {string} data.refresh_token
-    * @param {Number} data.expires_in
-    * @param {String} data.grant_type
-    * @param {Object<String, String>} data.metadata
-    * @param {String} data.redirect_uri
-    * @param {Function} [callback]
-    * @returns {Promise} If no callback argument was given then a promise is returned.
-    */
+     * Create the OAuth2 information.
+     *
+     * @param {Number} type use PluginOAuth2Info.OAUTH_USER or PluginOAuth2Info.OAUTH_PROVIDER
+     * @param {String} data.access_token
+     * @param {String} data.token_type
+     * @param {string} data.refresh_token
+     * @param {Number} data.expires_in
+     * @param {String} data.grant_type
+     * @param {Object<String, String>} data.metadata
+     * @param {String} data.redirect_uri
+     * @param {Function} [callback]
+     * @returns {Promise} If no callback argument was given then a promise is returned.
+     */
+    create(type, data, callback) {
+      return promiseOrCallback('createPluginOAuth2Info', {
+        caller: this.caller,
+        oAuthType: type,
+        oAuth2Data: data
+      }, callback);
+    }
+
+    /**
+     * Update the OAuth2 information.
+     *
+     * @param {Number} type use PluginOAuth2Info.OAUTH_USER or PluginOAuth2Info.OAUTH_PROVIDER
+     * @param {String} data.access_token
+     * @param {String} data.token_type
+     * @param {string} data.refresh_token
+     * @param {Number} data.expires_in
+     * @param {String} data.grant_type
+     * @param {Object<String, String>} data.metadata
+     * @param {String} data.redirect_uri
+     * @param {Function} [callback]
+     * @returns {Promise} If no callback argument was given then a promise is returned.
+     */
     update(type, data, callback) {
       return promiseOrCallback('updatePluginOAuth2Info', {
         caller: this.caller,
@@ -97,12 +118,12 @@ module.exports = (function(){
     }
 
     /**
-    * Delete the OAuth2 information.
-    *
-    * @param {Number} type use PluginOAuth2Info.OAUTH_USER or PluginOAuth2Info.OAUTH_PROVIDER
-    * @param {Function} [callback]
-    * @returns {Promise} If no callback argument was given then a promise is returned.
-    */
+     * Delete the OAuth2 information.
+     *
+     * @param {Number} type use PluginOAuth2Info.OAUTH_USER or PluginOAuth2Info.OAUTH_PROVIDER
+     * @param {Function} [callback]
+     * @returns {Promise} If no callback argument was given then a promise is returned.
+     */
     delete(type, callback) {
       return promiseOrCallback('deletePluginOAuth2Info', {
         caller: this.caller,
@@ -119,11 +140,13 @@ module.exports = (function(){
     }
   }
 
-  var flattenScope = function(scope) {
+  var flattenScope = function (scope) {
     if (scope !== null && typeof scope === 'object') {
       return scope;
     }
-    return { scope: scope };
+    return {
+      scope: scope
+    };
   }
 
   class PluginLocalData {
@@ -132,13 +155,13 @@ module.exports = (function(){
     }
 
     /**
-    * Fetch Local Storage information on Converse.AI.
-    * @param {String} key the key of the key-value pair.
-    * @param {Number|Object} scope use PluginLocalData.SCOPE_USER or PluginLocalData.SCOPE_PROVIDER or an object with properties `scope` and `uuid`.
-    * @param {Function} [callback]
-    *
-    * @returns {Promise} If no callback argument was given then a promise is returned.
-    */
+     * Fetch Local Storage information on Converse.AI.
+     * @param {String} key the key of the key-value pair.
+     * @param {Number|Object} scope use PluginLocalData.SCOPE_USER or PluginLocalData.SCOPE_PROVIDER or an object with properties `scope` and `uuid`.
+     * @param {Function} [callback]
+     *
+     * @returns {Promise} If no callback argument was given then a promise is returned.
+     */
     fetch(key, scope = PluginLocalData.SCOPE_USER, callback) {
       var scopeObj = flattenScope(scope);
       return promiseOrCallback('getPluginLocalData', {
@@ -150,14 +173,14 @@ module.exports = (function(){
     }
 
     /**
-    * Store Local Storage information on Converse.AI.
-    * @param {String} key the key of the key-value pair.
-    * @param {Object} value the value of the key-value pair.
-    * @param {Number|Object} scope use PluginLocalData.SCOPE_USER or PluginLocalData.SCOPE_PROVIDER or an object with properties `scope` and `uuid`.
-    * @param {Function} [callback]
-    *
-    * @returns {Promise} If no callback argument was given then a promise is returned.
-    */
+     * Store Local Storage information on Converse.AI.
+     * @param {String} key the key of the key-value pair.
+     * @param {Object} value the value of the key-value pair.
+     * @param {Number|Object} scope use PluginLocalData.SCOPE_USER or PluginLocalData.SCOPE_PROVIDER or an object with properties `scope` and `uuid`.
+     * @param {Function} [callback]
+     *
+     * @returns {Promise} If no callback argument was given then a promise is returned.
+     */
     store(key, value, scope = PluginLocalData.SCOPE_USER, callback) {
       var scopeObj = flattenScope(scope);
       return promiseOrCallback('storePluginLocalData', {
@@ -170,13 +193,13 @@ module.exports = (function(){
     }
 
     /**
-    * Delete Local Storage information on Converse.AI.
-    * @param {String} key the key of the key-value pair.
-    * @param {Number|Object} scope use PluginLocalData.SCOPE_USER or PluginLocalData.SCOPE_PROVIDER or an object with properties `scope` and `uuid`.
-    * @param {Function} [callback]
-    *
-    * @returns {Promise} If no callback argument was given then a promise is returned.
-    */
+     * Delete Local Storage information on Converse.AI.
+     * @param {String} key the key of the key-value pair.
+     * @param {Number|Object} scope use PluginLocalData.SCOPE_USER or PluginLocalData.SCOPE_PROVIDER or an object with properties `scope` and `uuid`.
+     * @param {Function} [callback]
+     *
+     * @returns {Promise} If no callback argument was given then a promise is returned.
+     */
     delete(key, scope = PluginLocalData.SCOPE_USER, callback) {
       var scopeObj = flattenScope(scope);
       return promiseOrCallback('storePluginLocalData', {
